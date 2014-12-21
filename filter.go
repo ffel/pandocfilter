@@ -3,6 +3,8 @@
 //
 // cat filter.go | go run filter.go
 //
+// pandoc readme.md -o readme.html --filter ./pandocfilter
+//
 // see http://nathanleclaire.com/blog/2014/07/19/demystifying-golangs-io-dot-reader-and-io-dot-writer-interfaces/
 package main
 
