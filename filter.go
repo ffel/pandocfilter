@@ -17,6 +17,9 @@ import (
 	"strings"
 )
 
+// todo: <http://blog.golang.org/json-and-go> contains a lot
+// simpler version of a stdin stdout filter implementation
+
 func main() {
 	// the default scanner reads line after line
 	scanner := bufio.NewScanner(os.Stdin)

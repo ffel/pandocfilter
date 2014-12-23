@@ -26,6 +26,11 @@ func main() {
 	//
 	// -  parse based upon "t" values into proper structs
 	// -  write to json again
+	//
+	// wanneer je nette structs gebruikt, kan je in veel gevallen
+	// gebruik maken van de nul waarde van slices om weer naar
+	// json te gaan:  een space heeft een lege slice van strings, en
+	// zo zijn er meer!
 }
 
 func process(json interface{}, indent, key string) {
