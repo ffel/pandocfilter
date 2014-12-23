@@ -1,12 +1,4 @@
-// a much simpler piece of code
-//
-// pandoc readme.md -o readme.html --filter ./pandocfilter
-//
-// -- pandocfilter$ pandoc readme.md -o readme.html --filter ./filter2
-// 2014/12/22 21:58:34 json: cannot unmarshal array into Go value of type map[string]interface {}
-// pandoc: not enough input
-//
-// it does not run the code recursively
+// json readers and writers are provided for in std lib ...
 
 package main
 
@@ -27,59 +19,32 @@ func main() {
 		return
 	}
 
-	process(json, "")
+	process(json, "", "")
 	// enc := json.NewEncoder(os.Stdout)
-	// for {
-	// 	var v map[string]interface{}
-	// 	if err := dec.Decode(&v); err != nil {
-	// 		log.Println(err)
-	// 		return
-	// 	}
-	// 	// for k := range v {
-	// 	// 	if k != "Name" {
-	// 	// 		delete(v, k)
-	// 	// 	}
-	// 	// }
-	// 	if err := enc.Encode(&v); err != nil {
-	// 		log.Println(err)
-	// 	}
-	// }
+
+	// next steps:
+	//
+	// -  parse based upon "t" values into proper structs
+	// -  write to json again
 }
 
-func process(json interface{}, prefix string) {
-	// for k, v := range m {
-	// 	switch vv := v.(type) {
-	// 	case string:
-	// 		fmt.Println(k, "is string", vv)
-	// 	case int:
-	// 		fmt.Println(k, "is int", vv)
-	// 	case []interface{}:
-	// 		fmt.Println(k, "is an array:")
-	// 		for i, u := range vv {
-	// 			fmt.Println(i, u)
-	// 		}
-	// 	default:
-	// 		fmt.Println(k, "is of a type I don't know how to handle")
-	// 	}
-	// }
+func process(json interface{}, indent, key string) {
 	switch elem := json.(type) {
-	case string:
-		fmt.Printf("%s* string: %v\n", prefix, json)
-	case int:
-		fmt.Printf("%s* int: %v\n", prefix, json)
+	case string, float64, bool:
+		fmt.Printf("%s%s %T: %v\n", indent, key, elem, json)
 	case []interface{}:
-		fmt.Printf("%s* slice:\n", prefix)
+		fmt.Printf("%s%s slice:\n", indent, key)
 		// use type assertion to tell compiler that iterating is possible
-		for _, v := range json.([]interface{}) {
-			process(v, prefix+"  ")
+		for i, v := range json.([]interface{}) {
+			process(v, indent+"  ", fmt.Sprintf("%v:", i))
 		}
 	case map[string]interface{}:
-		fmt.Printf("%s* map:\n", prefix)
+		fmt.Printf("%s%s map:\n", indent, key)
 		// use type assertion to tell compiler that iterating is possible
-		for _, v := range json.(map[string]interface{}) {
-			process(v, prefix+"  ")
+		for k, v := range json.(map[string]interface{}) {
+			process(v, indent+"  ", k+":")
 		}
 	default:
-		fmt.Printf("don't know how to handle %v\n", elem)
+		fmt.Printf("don't know how to handle %T %v\n", elem, elem)
 	}
 }
