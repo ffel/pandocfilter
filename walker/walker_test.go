@@ -2,8 +2,8 @@ package walker
 
 import (
 	"encoding/json"
+	"log"
 	"strings"
-	"testing"
 )
 
 const data string = `[ { "unMeta" : {  } },
@@ -34,16 +34,31 @@ const data string = `[ { "unMeta" : {  } },
 ]
 `
 
-func Test(t *testing.T) {
-	// dereference?
+func ExampleWalk() {
 	dec := json.NewDecoder(strings.NewReader(data))
 
 	var j interface{}
 	if err := dec.Decode(&j); err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
 
 	Walk(dumper{}, j, "root", 0)
 
-	t.Error("unfinished business")
+	// Output:
+	// + list "root"
+	//     + map "0"
+	//         + map "unMeta"
+	//     + list "1"
+	//         + list "Header"
+	//             + number "0" 1
+	//             + list "1"
+	//                 + string "0" "hallo"
+	//                 + list "1"
+	//                 + list "2"
+	//             + list "2"
+	//                 + string "Str" "Hallo"
+	//         + list "Para"
+	//             + string "Str" "Hallo"
+	//             + list "Space"
+	//             + string "Str" "Wereld!"
 }
