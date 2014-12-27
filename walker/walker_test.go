@@ -1,7 +1,9 @@
 package walker
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 )
@@ -42,7 +44,12 @@ func ExampleWalk() {
 		log.Fatal(err)
 	}
 
-	Walk(dumper{}, j, "root", 0)
+	// http://golang.org/pkg/bytes/#NewBuffer
+	d := dumper{w: &bytes.Buffer{}}
+
+	Walk(d, j, "root", 0)
+
+	fmt.Println(d.w.String())
 
 	// Output:
 	// + list "root"

@@ -1,6 +1,7 @@
 package walker
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -69,30 +70,33 @@ func indent(level int) string {
 	return strings.Repeat("    ", level)
 }
 
-type dumper struct{}
+// http://stackoverflow.com/questions/13765797/the-best-way-to-get-a-string-from-a-writer-in-go
+type dumper struct {
+	w *bytes.Buffer
+}
 
 func (d dumper) List(key string, json []interface{}, level int) bool {
-	fmt.Printf("%s+ list %q\n", indent(level), key)
+	fmt.Fprintf(d.w, "%s+ list %q\n", indent(level), key)
 
 	// let walker continue the traversal
 	return true
 }
 
 func (d dumper) Map(key string, json map[string]interface{}, level int) bool {
-	fmt.Printf("%s+ map %q\n", indent(level), key)
+	fmt.Fprintf(d.w, "%s+ map %q\n", indent(level), key)
 
 	// let walker continue the traversal into map
 	return true
 }
 
 func (d dumper) String(key, value string, level int) {
-	fmt.Printf("%s+ string %q %q\n", indent(level), key, value)
+	fmt.Fprintf(d.w, "%s+ string %q %q\n", indent(level), key, value)
 }
 
 func (d dumper) Number(key string, value float64, level int) {
-	fmt.Printf("%s+ number %q %v\n", indent(level), key, value)
+	fmt.Fprintf(d.w, "%s+ number %q %v\n", indent(level), key, value)
 }
 
 func (d dumper) Bool(key string, value bool, level int) {
-	fmt.Printf("%s+ bool %q %t\n", indent(level), key, value)
+	fmt.Fprintf(d.w, "%s+ bool %q %t\n", indent(level), key, value)
 }
