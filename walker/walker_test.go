@@ -69,3 +69,31 @@ func ExampleWalk() {
 	//             + list "Space"
 	//             + string "Str" "Wereld!"
 }
+
+// it should be possible to sort of override an embedded method
+// http://golang.org/doc/effective_go.html#embedding
+
+// need to test possibilities to change content
+
+func ExampleEncode() {
+	// NewDecoder and NewEncoder are used for these make sense
+	// in the stdin stdout filter approach
+	dec := json.NewDecoder(strings.NewReader(data))
+
+	var j interface{}
+	if err := dec.Decode(&j); err != nil {
+		log.Fatal(err)
+	}
+
+	buff := &bytes.Buffer{}
+	enc := json.NewEncoder(buff)
+
+	if err := enc.Encode(&j); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(buff.String())
+
+	// output:
+	// [{"unMeta":{}},[{"c":[1,["hallo",[],[]],[{"c":"Hallo","t":"Str"}]],"t":"Header"},{"c":[{"c":"Hallo","t":"Str"},{"c":[],"t":"Space"},{"c":"Wereld!","t":"Str"}],"t":"Para"}]]
+}
