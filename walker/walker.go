@@ -57,7 +57,10 @@ func Walk(walker Walker, json interface{}, key string, level int) {
 			}
 		}
 	case string:
+		// str := &(json.(string))
+		// walker.String(key, str, level)
 		walker.String(key, json.(string), level)
+		// json = "booo"
 	case float64:
 		walker.Number(key, json.(float64), level)
 	default:
