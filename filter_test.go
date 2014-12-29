@@ -45,11 +45,19 @@ func walk(json interface{}) interface{} {
 		}
 		return result
 	case map[string]interface{}:
-		result := make(map[string]interface{})
-		for k, v := range json.(map[string]interface{}) {
-			result[k] = walk(v)
+		typekey, tok := json.(map[string]interface{})["t"]
+		contents, cok := json.(map[string]interface{})["c"]
+		if tok && cok {
+			// todo fix lost of c t object
+			// maybe a variant of walk, walkct, that wraps the result in a
+			return walkct(typekey.(string), contents)
+		} else {
+			result := make(map[string]interface{})
+			for k, v := range json.(map[string]interface{}) {
+				result[k] = walk(v)
+			}
+			return result
 		}
-		return result
 	case string:
 		if json.(string) == "Wereld!" {
 			return "Europe!"
@@ -57,9 +65,16 @@ func walk(json interface{}) interface{} {
 			return json.(string)
 		}
 	default:
-		//fmt.Printf("??? %T - %v\n", elem, elem)
 		return json
 	}
+}
+
+func walkct(key string, json interface{}) interface{} {
+	m := make(map[string]interface{})
+	m["t"] = key
+	m["c"] = walk(json)
+
+	return m
 }
 
 func ExampleClone() {
@@ -71,8 +86,6 @@ func ExampleClone() {
 	}
 
 	cl := walk(j)
-
-	// fmt.Printf("%#v\n", cl)
 
 	buff := &bytes.Buffer{}
 	enc := json.NewEncoder(buff)
