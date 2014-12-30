@@ -7,10 +7,22 @@ package pandocfilter
 type Duplicator struct {
 }
 
-func (p Duplicator) List(key string, json []interface{}) (bool, interface{}) {
+func (d Duplicator) List(key string, json []interface{}) (bool, interface{}) {
 	return true, json
 }
 
-func (p Duplicator) Map(key string, json map[string]interface{}) (bool, interface{}) {
+func (d Duplicator) Map(key string, json map[string]interface{}) (bool, interface{}) {
 	return true, json
+}
+
+func (d Duplicator) String(key string, value string) interface{} {
+	return value
+}
+
+func (d Duplicator) Number(key string, value float64) interface{} {
+	return value
+}
+
+func (d Duplicator) Bool(key string, value bool) interface{} {
+	return value
 }
