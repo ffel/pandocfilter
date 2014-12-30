@@ -9,12 +9,12 @@ import (
 // and Map ask whether Walk should walk its members or not.  In
 // case not, it returns its own members
 //
-// Methods for basic types, String, Bool, Number return an interface
+// Methods for basic types, Text, Bool, Number return an interface
 // to allow these to return a larger object (say, a link)
 type Filter interface {
 	List(key string, json []interface{}) (bool, interface{})         // announce start of list
 	Map(key string, json map[string]interface{}) (bool, interface{}) // announce non ct maps
-	String(key string, value string) interface{}
+	Text(key string, value string) interface{}
 	Number(key string, value float64) interface{}
 	Bool(key string, value bool) interface{}
 }
@@ -60,7 +60,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		return m
 
 	case string:
-		return filter.String(key, json.(string))
+		return filter.Text(key, json.(string))
 
 	case float64:
 		return filter.Number(key, json.(float64))

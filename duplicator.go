@@ -15,7 +15,7 @@ func (d Duplicator) Map(key string, json map[string]interface{}) (bool, interfac
 	return true, json
 }
 
-func (d Duplicator) String(key string, value string) interface{} {
+func (d Duplicator) Text(key string, value string) interface{} {
 	return value
 }
 
