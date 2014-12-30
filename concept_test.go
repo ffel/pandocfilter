@@ -1,40 +1,9 @@
 package pandocfilter
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"log"
-	"strings"
-)
+import "fmt"
 
-const data string = `[ { "unMeta" : {  } },
-  [ { "c" : [ 1,
-          [ "hallo",
-            [  ],
-            [  ]
-          ],
-          [ { "c" : "Hallo",
-              "t" : "Str"
-            } ]
-        ],
-      "t" : "Header"
-    },
-    { "c" : [ { "c" : "Hallo",
-            "t" : "Str"
-          },
-          { "c" : [  ],
-            "t" : "Space"
-          },
-          { "c" : "Wereld!",
-            "t" : "Str"
-          }
-        ],
-      "t" : "Para"
-    }
-  ]
-]
-`
+// this test is written before the implementation as a proof of concept
+// as such, it is not a unit test that tests the implementation!
 
 func walk(json interface{}) interface{} {
 	switch /*elem := */ json.(type) {
@@ -77,24 +46,13 @@ func walkct(key string, json interface{}) interface{} {
 	return m
 }
 
-func ExampleClone() {
-	dec := json.NewDecoder(strings.NewReader(data))
+// test the concept before coding anything real
+func ExampleConcept() {
+	json := decode(data)
 
-	var j interface{}
-	if err := dec.Decode(&j); err != nil {
-		log.Fatal(err)
-	}
+	mod := walk(json)
 
-	cl := walk(j)
-
-	buff := &bytes.Buffer{}
-	enc := json.NewEncoder(buff)
-
-	if err := enc.Encode(&cl); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(buff.String())
+	fmt.Println(encode(mod))
 
 	// Output:
 	// [{"unMeta":{}},[{"c":[1,["hallo",[],[]],[{"c":"Hallo","t":"Str"}]],"t":"Header"},{"c":[{"c":"Hallo","t":"Str"},{"c":[],"t":"Space"},{"c":"Europe!","t":"Str"}],"t":"Para"}]]
