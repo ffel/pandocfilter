@@ -1,7 +1,7 @@
 package w2
 
 import (
-	"log"
+	"sort"
 	"strconv"
 )
 
@@ -45,14 +45,30 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 
 		m := make(map[string]interface{})
 
-		for k, v := range set {
-			m[k] = Walk(filter, k, v)
+		for _, k := range keys(set, true) {
+			m[k] = Walk(filter, k, set[k])
 		}
 
 		return m
 
 	default:
-		log.Printf("unexpected value %T %#v\n", json, json)
+		// log.Printf("unexpected value %T %#v\n", json, json)
 		return filter.Value(key, json)
 	}
+}
+
+// keys return a sorted list of keys in `set` depending on `sorted`
+func keys(set map[string]interface{}, sorted bool) []string {
+	kk := make([]string, len(set))
+	i := 0
+	for k, _ := range set {
+		kk[i] = k
+		i++
+	}
+
+	if sorted {
+		sort.Strings(kk)
+	}
+
+	return kk
 }
