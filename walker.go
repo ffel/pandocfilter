@@ -38,7 +38,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		typekey, tok := json.(map[string]interface{})["t"]
 		contents, cok := json.(map[string]interface{})["c"]
 
-		if tok && cok {
+		if false && tok && cok {
 			result := make(map[string]interface{})
 			result["t"] = typekey.(string)
 			result["c"] = Walk(filter, typekey.(string), contents)
