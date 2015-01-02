@@ -20,17 +20,30 @@ type Tree struct {
 
 func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
 	list, isList := value.([]interface{})
-	set, isSet := value.(map[string]interface{})
 
-	switch {
-	case isList:
+	if isList {
 		fmt.Fprintf(t.buff, "%s+ %q: list:\n", t.indent(), key)
 
 		t.update(len(list), true)
 
 		return true, nil
+	}
 
-	case isSet:
+	// a cstring is a special type of map
+	isStr, tstring, cstring := CString(value)
+
+	if isStr {
+		fmt.Fprintf(t.buff, "%s+ %q: string %q: %v\n", t.indent(), key, tstring, cstring)
+		t.update(0, false)
+
+		// prevent walker from going into this tc object
+		return false, value
+	}
+
+	// check for other type of map
+	set, isSet := value.(map[string]interface{})
+
+	if isSet {
 		fmt.Fprintf(t.buff, "%s+ %q: map:\n", t.indent(), key)
 
 		t.update(len(set), true)
@@ -38,6 +51,7 @@ func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
 		return true, nil
 	}
 
+	// value is not identifies as something special
 	fmt.Fprintf(t.buff, "%s+ %q: value: %v\n", t.indent(), key, value)
 
 	t.update(0, false)
