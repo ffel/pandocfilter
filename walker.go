@@ -29,7 +29,9 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		slice := make([]interface{}, 0, len(list))
 
 		for i, v := range list {
-			slice = append(slice, Walk(filter, strconv.Itoa(i), v))
+			if next := Walk(filter, strconv.Itoa(i), v); next != nil {
+				slice = append(slice, next)
+			}
 		}
 
 		return slice
@@ -44,13 +46,14 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		m := make(map[string]interface{})
 
 		for _, k := range keys(set, true) {
-			m[k] = Walk(filter, k, set[k])
+			if next := Walk(filter, k, set[k]); next != nil {
+				m[k] = next
+			}
 		}
 
 		return m
 
 	default:
-		// log.Printf("unexpected value %T %#v\n", json, json)
 		_, result := filter.Value(key, json)
 
 		return result
