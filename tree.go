@@ -18,44 +18,55 @@ type Tree struct {
 	buff   *bytes.Buffer
 }
 
-func (t *Tree) List(key string, json []interface{}) (bool, interface{}) {
-	fmt.Fprintf(t.buff, "%s+ list %q\n", t.indent(), key)
+func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
+	list, isList := value.([]interface{})
 
-	t.update(len(json), true)
+	if isList {
+		fmt.Fprintf(t.buff, "%s+ %q: list:\n", t.indent(), key)
 
-	return true, json
-}
+		t.update(len(list), true)
 
-func (t *Tree) Map(key string, json map[string]interface{}) (bool, interface{}) {
-	fmt.Fprintf(t.buff, "%s+ map %q\n", t.indent(), key)
+		return true, nil
+	}
 
-	t.update(len(json), true)
+	// a cstring is a special type of map
+	isTC, tval, cval := IsTypeContents(value)
 
-	return true, json
-}
+	if isTC /*&& isSet*/ {
+		switch tval {
+		// meaningfull collections (there will be more)
+		// a trick is done to prevent the explicit print of t and c
+		case Header, Para:
+			t.update(1, true)
+			return false, Walk(t, tval, cval)
+		case Space:
+			fmt.Fprintf(t.buff, "%s+ %q - %s\n", t.indent(), key, tval)
+			t.update(0, false)
+			return false, value
+		case Str:
+			fmt.Fprintf(t.buff, "%s+ %q - %s: %q\n", t.indent(), key, tval, cval.(string))
+			t.update(0, false)
+			return false, value
+		}
+	}
 
-func (t *Tree) Text(key string, value string) interface{} {
-	fmt.Fprintf(t.buff, "%s+ text %q: %q\n", t.indent(), key, value)
+	// check for other type of map
+	set, isSet := value.(map[string]interface{})
+
+	if isSet {
+		fmt.Fprintf(t.buff, "%s+ %q: map:\n", t.indent(), key)
+
+		t.update(len(set), true)
+
+		return true, nil
+	}
+
+	// value is not identifies as something special
+	fmt.Fprintf(t.buff, "%s+ %q: value: %v\n", t.indent(), key, value)
 
 	t.update(0, false)
 
-	return value
-}
-
-func (t *Tree) Number(key string, value float64) interface{} {
-	fmt.Fprintf(t.buff, "%s+ number %q: %v\n", t.indent(), key, value)
-
-	t.update(0, false)
-
-	return value
-}
-
-func (t *Tree) Bool(key string, value bool) interface{} {
-	fmt.Fprintf(t.buff, "%s+ list %q: %t\n", t.indent(), key, value)
-
-	t.update(0, false)
-
-	return value
+	return true, value
 }
 
 func (t *Tree) String() string {

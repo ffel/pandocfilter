@@ -1,76 +1,74 @@
+// package to support pandoc filters in Go
 package pandocfilter
 
 import (
-	"log"
+	"sort"
 	"strconv"
 )
 
-// Filter defines the methods to process pandoc json.  Methods List
-// and Map ask whether Walk should walk its members or not.  In
-// case not, it returns its own members
-//
-// Methods for basic types, Text, Bool, Number return an interface
-// to allow these to return a larger object (say, a link)
+// Filter prescibes Value method that is called by Walk
+// Value should return true or meaningfull 2nd return value
+// (for leaves 1st return argument is ignored)
 type Filter interface {
-	List(key string, json []interface{}) (bool, interface{})         // announce start of list
-	Map(key string, json map[string]interface{}) (bool, interface{}) // announce non ct maps
-	Text(key string, value string) interface{}
-	Number(key string, value float64) interface{}
-	Bool(key string, value bool) interface{}
+	Value(key string, value interface{}) (bool, interface{})
 }
 
+// alleen nog maar het doorlopen van de structuur
 func Walk(filter Filter, key string, json interface{}) interface{} {
-	switch elem := json.(type) {
-	case []interface{}:
-		decend, result := filter.List(key, json.([]interface{}))
+	list, isList := json.([]interface{})
+	set, isSet := json.(map[string]interface{})
+
+	switch {
+	case isList:
+		decend, result := filter.Value(key, list)
+
 		if !decend {
 			return result
 		}
 
-		// okay, we do the walk into the slice elements ourselves
-		slice := make([]interface{}, 0, len(json.([]interface{})))
-		for i, v := range json.([]interface{}) {
+		slice := make([]interface{}, 0, len(list))
+
+		for i, v := range list {
 			slice = append(slice, Walk(filter, strconv.Itoa(i), v))
 		}
+
 		return slice
-	case map[string]interface{}:
-		// check for common c(ontent) t(ype) json object
-		typekey, tok := json.(map[string]interface{})["t"]
-		contents, cok := json.(map[string]interface{})["c"]
 
-		if false && tok && cok {
-			result := make(map[string]interface{})
-			result["t"] = typekey.(string)
-			result["c"] = Walk(filter, typekey.(string), contents)
+	case isSet:
+		decend, result := filter.Value(key, set)
 
-			return result
-		}
-
-		// check if filter.Map returns its own result (decend == false)
-		decend, result := filter.Map(key, json.(map[string]interface{}))
 		if !decend {
 			return result
 		}
 
-		// okay, we do the walk into object
 		m := make(map[string]interface{})
-		for k, v := range json.(map[string]interface{}) {
-			m[k] = Walk(filter, k, v)
+
+		for _, k := range keys(set, true) {
+			m[k] = Walk(filter, k, set[k])
 		}
+
 		return m
 
-	case string:
-		return filter.Text(key, json.(string))
-
-	case float64:
-		return filter.Number(key, json.(float64))
-
-	case bool:
-		return filter.Bool(key, json.(bool))
-
 	default:
-		log.Printf("no support for %T %#v\n", elem, elem)
-		return json
+		// log.Printf("unexpected value %T %#v\n", json, json)
+		_, result := filter.Value(key, json)
+
+		return result
+	}
+}
+
+// keys return a sorted list of keys in `set` depending on `sorted`
+func keys(set map[string]interface{}, sorted bool) []string {
+	kk := make([]string, len(set))
+	i := 0
+	for k, _ := range set {
+		kk[i] = k
+		i++
 	}
 
+	if sorted {
+		sort.Strings(kk)
+	}
+
+	return kk
 }

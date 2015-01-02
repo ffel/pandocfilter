@@ -1,4 +1,4 @@
-package w2
+package pandocfilter
 
 // pandoc types
 const (
