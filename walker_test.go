@@ -8,35 +8,84 @@ import (
 	"strings"
 )
 
-// this is similar content as passed by pandoc to the filter
-// pandoc hello.md -o hello.html --filter ./filter
-const data string = `[ { "unMeta" : {  } },
+/*
+meta is formatted json produced by pandoc based upon the following
+
+  ---
+  author:
+  - ffel
+  date: december 2014
+  title: fix meta header
+  ...
+
+  Hello
+  =====
+
+  Ordinary text
+*/
+const meta = `[ { "unMeta" : { "author" : { "c" : [ { "c" : [ { "c" : "ffel",
+                        "t" : "Str"
+                      } ],
+                  "t" : "MetaInlines"
+                } ],
+            "t" : "MetaList"
+          },
+        "date" : { "c" : [ { "c" : "december",
+                  "t" : "Str"
+                },
+                { "c" : [  ],
+                  "t" : "Space"
+                },
+                { "c" : "2014",
+                  "t" : "Str"
+                }
+              ],
+            "t" : "MetaInlines"
+          },
+        "title" : { "c" : [ { "c" : "fix",
+                  "t" : "Str"
+                },
+                { "c" : [  ],
+                  "t" : "Space"
+                },
+                { "c" : "meta",
+                  "t" : "Str"
+                },
+                { "c" : [  ],
+                  "t" : "Space"
+                },
+                { "c" : "header",
+                  "t" : "Str"
+                }
+              ],
+            "t" : "MetaInlines"
+          }
+      } },
   [ { "c" : [ 1,
-          [ "hallo",
+          [ "hello",
             [  ],
             [  ]
           ],
-          [ { "c" : "Hallo",
+          [ { "c" : "Hello",
               "t" : "Str"
             } ]
         ],
       "t" : "Header"
     },
-    { "c" : [ { "c" : "Hallo",
+    { "c" : [ { "c" : "Ordinary",
             "t" : "Str"
           },
           { "c" : [  ],
             "t" : "Space"
           },
-          { "c" : "Wereld!",
+          { "c" : "text",
             "t" : "Str"
           }
         ],
       "t" : "Para"
     }
   ]
-]
-`
+]`
 
 // decode accepts data as a reader to convert into a data object
 // much the same way as used in the filter implementation
@@ -67,7 +116,7 @@ func encode(js interface{}) string {
 }
 
 func ExampleDuplicator() {
-	json := decode(data)
+	json := decode(meta)
 
 	f := Duplicator{}
 
@@ -76,5 +125,5 @@ func ExampleDuplicator() {
 	fmt.Println(encode(object))
 
 	// Output:
-	// [{"unMeta":{}},[{"c":[1,["hallo",[],[]],[{"c":"Hallo","t":"Str"}]],"t":"Header"},{"c":[{"c":"Hallo","t":"Str"},{"c":[],"t":"Space"},{"c":"Wereld!","t":"Str"}],"t":"Para"}]]
+	// [{"unMeta":{"author":{"c":[{"c":[{"c":"ffel","t":"Str"}],"t":"MetaInlines"}],"t":"MetaList"},"date":{"c":[{"c":"december","t":"Str"},{"c":[],"t":"Space"},{"c":"2014","t":"Str"}],"t":"MetaInlines"},"title":{"c":[{"c":"fix","t":"Str"},{"c":[],"t":"Space"},{"c":"meta","t":"Str"},{"c":[],"t":"Space"},{"c":"header","t":"Str"}],"t":"MetaInlines"}}},[{"c":[1,["hello",[],[]],[{"c":"Hello","t":"Str"}]],"t":"Header"},{"c":[{"c":"Ordinary","t":"Str"},{"c":[],"t":"Space"},{"c":"text","t":"Str"}],"t":"Para"}]]
 }
