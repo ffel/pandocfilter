@@ -7,14 +7,6 @@ package w2
 type Duplicator struct {
 }
 
-func (d Duplicator) List(key string, value []interface{}) (bool, interface{}) {
-	return true, nil
-}
-
-func (d Duplicator) Set(key string, value map[string]interface{}) (bool, interface{}) {
-	return true, nil
-}
-
-func (d Duplicator) Value(key string, value interface{}) interface{} {
-	return value
+func (d Duplicator) Value(key string, value interface{}) (bool, interface{}) {
+	return true, value
 }

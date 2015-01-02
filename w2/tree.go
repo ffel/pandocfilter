@@ -18,28 +18,31 @@ type Tree struct {
 	buff   *bytes.Buffer
 }
 
-func (t *Tree) List(key string, value []interface{}) (bool, interface{}) {
-	fmt.Fprintf(t.buff, "%s+ %q: list:\n", t.indent(), key)
+func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
+	list, isList := value.([]interface{})
+	set, isSet := value.(map[string]interface{})
 
-	t.update(len(value), true)
+	switch {
+	case isList:
+		fmt.Fprintf(t.buff, "%s+ %q: list:\n", t.indent(), key)
 
-	return true, nil
-}
+		t.update(len(list), true)
 
-func (t *Tree) Set(key string, value map[string]interface{}) (bool, interface{}) {
-	fmt.Fprintf(t.buff, "%s+ %q: map:\n", t.indent(), key)
+		return true, nil
 
-	t.update(len(value), true)
+	case isSet:
+		fmt.Fprintf(t.buff, "%s+ %q: map:\n", t.indent(), key)
 
-	return true, nil
-}
+		t.update(len(set), true)
 
-func (t *Tree) Value(key string, value interface{}) interface{} {
+		return true, nil
+	}
+
 	fmt.Fprintf(t.buff, "%s+ %q: value: %v\n", t.indent(), key, value)
 
 	t.update(0, false)
 
-	return value
+	return true, value
 }
 
 func (t *Tree) String() string {

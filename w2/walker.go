@@ -1,3 +1,4 @@
+// package to support pandoc filters in Go
 package w2
 
 import (
@@ -5,14 +6,11 @@ import (
 	"strconv"
 )
 
-// wellicht een idee dat dit nog interne functies zijn, maar
-// ik kan me ook helper functies voorstellen waarmee je van
-// bijvoorbeeld een Set kan nagaan of er sprake is van een
-// string waarde
+// Filter prescibes Value method that is called by Walk
+// Value should return true or meaningfull 2nd return value
+// (for leaves 1st return argument is ignored)
 type Filter interface {
-	List(key string, value []interface{}) (bool, interface{})
-	Set(key string, value map[string]interface{}) (bool, interface{})
-	Value(key string, value interface{}) interface{}
+	Value(key string, value interface{}) (bool, interface{})
 }
 
 // alleen nog maar het doorlopen van de structuur
@@ -22,7 +20,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 
 	switch {
 	case isList:
-		decend, result := filter.List(key, list)
+		decend, result := filter.Value(key, list)
 
 		if !decend {
 			return result
@@ -37,7 +35,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		return slice
 
 	case isSet:
-		decend, result := filter.Set(key, set)
+		decend, result := filter.Value(key, set)
 
 		if !decend {
 			return result
@@ -53,7 +51,9 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 
 	default:
 		// log.Printf("unexpected value %T %#v\n", json, json)
-		return filter.Value(key, json)
+		_, result := filter.Value(key, json)
+
+		return result
 	}
 }
 
