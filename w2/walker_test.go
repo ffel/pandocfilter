@@ -9,7 +9,7 @@ import (
 )
 
 /*
-json produced by pandoc based upon the following
+meta is formatted json produced by pandoc based upon the following
 
   ---
   author:
