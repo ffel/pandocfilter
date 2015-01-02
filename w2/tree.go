@@ -30,14 +30,24 @@ func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
 	}
 
 	// a cstring is a special type of map
-	isStr, tstring, cstring := CString(value)
+	isTC, tval, cval := IsTypeContents(value)
 
-	if isStr {
-		fmt.Fprintf(t.buff, "%s+ %q: string %q: %v\n", t.indent(), key, tstring, cstring)
-		t.update(0, false)
-
-		// prevent walker from going into this tc object
-		return false, value
+	if isTC /*&& isSet*/ {
+		switch tval {
+		// meaningfull collections (there will be more)
+		// a trick is done to prevent the explicit print of t and c
+		case Header, Para:
+			t.update(1, true)
+			return false, Walk(t, tval, cval)
+		case Space:
+			fmt.Fprintf(t.buff, "%s+ %q - %s\n", t.indent(), key, tval)
+			t.update(0, false)
+			return false, value
+		case Str:
+			fmt.Fprintf(t.buff, "%s+ %q - %s: %q\n", t.indent(), key, tval, cval.(string))
+			t.update(0, false)
+			return false, value
+		}
 	}
 
 	// check for other type of map

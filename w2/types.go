@@ -1,8 +1,16 @@
 package w2
 
+// pandoc types
+const (
+	Header = "Header" // section header
+	Para   = "Para"   // paragraph
+	Space  = "Space"  // white space
+	Str    = "Str"    // word (possibly with some interpunction)
+)
+
 // CString checks whether value is a tc object with c as a string
 func CString(value interface{}) (bool, string, string) {
-	isTC, t, c := isTypeContents(value)
+	isTC, t, c := IsTypeContents(value)
 	if !isTC {
 		return false, "", ""
 	}
@@ -20,7 +28,7 @@ func WrapCString(t, c string) interface{} {
 
 // isContentsType checks for typical pandoc ct object
 // and returns type and contents in case it is
-func isTypeContents(value interface{}) (bool, string, interface{}) {
+func IsTypeContents(value interface{}) (bool, string, interface{}) {
 	set, isSet := value.(map[string]interface{})
 	if !isSet {
 		return false, "", nil
