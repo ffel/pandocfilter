@@ -32,13 +32,11 @@ func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
 	// a cstring is a special type of map
 	isTC, tval, cval := IsTypeContents(value)
 
-	if isTC /*&& isSet*/ {
+	// don't do anything special with known collection types
+	// as the returned values are used again by pandoc
+
+	if isTC {
 		switch tval {
-		// meaningfull collections (there will be more)
-		// a trick is done to prevent the explicit print of t and c
-		case Header, Para:
-			t.update(1, true)
-			return false, Walk(t, tval, cval)
 		case Space:
 			fmt.Fprintf(t.buff, "%s+ %q - %s\n", t.indent(), key, tval)
 			t.update(0, false)
@@ -50,7 +48,6 @@ func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
 		}
 	}
 
-	// check for other type of map
 	set, isSet := value.(map[string]interface{})
 
 	if isSet {

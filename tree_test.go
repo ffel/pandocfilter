@@ -37,7 +37,8 @@ func ExampleTree() {
 	//                     + "4" - Str: "header"
 	//                 + "t": value: MetaInlines
 	//     + "1": list:
-	//             + "Header": list:
+	//         + "0": map:
+	//             + "c": list:
 	//                 + "0": value: 1
 	//                 + "1": list:
 	//                     + "0": value: hello
@@ -45,8 +46,11 @@ func ExampleTree() {
 	//                     + "2": list:
 	//                 + "2": list:
 	//                     + "0" - Str: "Hello"
-	//             + "Para": list:
+	//             + "t": value: Header
+	//         + "1": map:
+	//             + "c": list:
 	//                 + "0" - Str: "Ordinary"
 	//                 + "1" - Space
 	//                 + "2" - Str: "text"
+	//             + "t": value: Para
 }
