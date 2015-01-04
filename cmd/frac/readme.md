@@ -5,5 +5,14 @@ Pandoc accepts math, for instance $\frac{a}{b}$. But these fractions are
 quite inconvenient to write. We can use filters to pre-process the
 input.
 
-A fraction $a/b$, a complicated fraction $$a+b / c$$ which is not the
-same as $$a + b/c$$. But not a/b.
+We can write faster (or concentrate more on the writing proces) if we
+can just write fraction $a/b$, a complicated fraction $$a+b / c-d$$
+which is not the same as $$a + b/c - d.$$ However, the filter should
+leave a/b (not in math mode) alone.
+
+This filter takes the character sequences before and after the / and
+uses these as arguments to `\frac{}{}`. spaces immediately before and
+after the / are allowed (and ignored).
+
+For the feature: it should be possible to define patterns in the pandoc
+yaml header.

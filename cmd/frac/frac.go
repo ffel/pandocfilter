@@ -43,6 +43,32 @@ func (f frac) resolve(value interface{}) interface{} {
 func TMath(value interface{}) (string, string) {
 	// dive into the data structure, outside in
 	// the tree dump of dptree is of great help
+	//
+	// have a look at
+	// https://github.com/mitchellh/mapstructure
+	// this could work if we're able to define the math part
+	// in a proper go struct.  This appears to be difficult
+	// or even impossible as the math data structure uses interface{}
+	// collections to its full extent:
+	// the "c" list has a map and a string value
+	// the latter map has a list and a string value
+	// maybe we could help things a little by adding a
+	//
+	// GetString("c", "0", "c")
+	//
+	// all the info is essentially there "c" and "t" refer to map fields
+	// every thing else is to be converted to an int which refers to a
+	// slice
+	//
+	// to convert back to an interface{} which is understood by pandoc
+	// is completely else. The scenario here is that we change a
+	// value in math field.  It must be possible to use a copy of this
+	// math field to do a
+	//
+	// PutString("c", "0", "c", "newvalue")
+	//
+	// The other scenario is that one element is replaced by something
+	// completely else, for instance, a code block for an image
 	s1 := value.(map[string]interface{})
 	s2 := s1["c"].([]interface{})
 	s3 := s2[0].(map[string]interface{})
@@ -52,17 +78,23 @@ func TMath(value interface{}) (string, string) {
 	return t, c
 }
 
-func WrapTMath(typeMath, math string) interface{} {
-	// inside out
-	s1 := make(map[string]interface{})
-	s1["c"] = make([]interface{}, 0)
-	s1["t"] = typeMath
-	s2 := make([]interface{}, 2)
-	s2[0] = s1
-	s2[1] = math
-	s3 := make(map[string]interface{})
-	s3["c"] = s2
-	s3["t"] = "Math"
+type jmap map[string]interface{}
+type jslice []interface{}
 
-	return s3
+func WrapTMath(typeMath, math string) interface{} {
+	// explicit struct is possible, even simpler if we use
+	// jmap and jslice aliases for map[string]interface{} and
+	// []interface{}
+	m := jmap{
+		"c": jslice{
+			jmap{
+				"c": jslice{},
+				"t": typeMath,
+			},
+			math,
+		},
+		"t": "Math",
+	}
+
+	return m
 }
