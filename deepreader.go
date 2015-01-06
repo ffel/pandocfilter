@@ -18,7 +18,7 @@ func GetString(json interface{}, indices ...string) (string, error) {
 				return "", errors.New("GetString error - no slice for index " + index)
 			}
 
-			if i < 0 || i > len(s) {
+			if i < 0 || i >= len(s) {
 				return "", errors.New("GetString error - slice out-of-range index " + index)
 			}
 

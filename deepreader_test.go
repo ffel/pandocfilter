@@ -64,9 +64,9 @@ func TestGetString_errors(t *testing.T) {
 		t.Errorf("unexpected error %v", err)
 	}
 
-	_, err = GetString(data, "c", "3")
+	_, err = GetString(data, "c", "2")
 
-	if err.Error() != "GetString error - slice out-of-range index 3" {
+	if err.Error() != "GetString error - slice out-of-range index 2" {
 		t.Errorf("unexpected error %v", err)
 	}
 
