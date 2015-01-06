@@ -10,11 +10,13 @@ func main() {
 	pandocfilter.Run(frac{})
 }
 
-var patt *regexp.Regexp
+var fracPatt *regexp.Regexp
+var dotPatt *regexp.Regexp
 
 func init() {
 	// http://godoc.org/regexp#example-Regexp-ReplaceAllString
-	patt = regexp.MustCompile(`(\S+)\s*/\s*(\S+)`)
+	fracPatt = regexp.MustCompile(`(\S+)\s*/\s*(\S+)`)
+	dotPatt = regexp.MustCompile(`\.`)
 }
 
 type frac struct{}
@@ -33,7 +35,10 @@ func (f frac) Value(key string, value interface{}) (bool, interface{}) {
 func (f frac) resolve(value interface{}) interface{} {
 	t, c := TMath(value)
 
-	return WrapTMath(t, patt.ReplaceAllString(c, `\frac{$1}{$2}`))
+	c = fracPatt.ReplaceAllString(c, `\frac{$1}{$2}`)
+	c = dotPatt.ReplaceAllString(c, `\cdot{}`)
+
+	return WrapTMath(t, c)
 }
 
 // should go to types.go
@@ -78,17 +83,17 @@ func TMath(value interface{}) (string, string) {
 	return t, c
 }
 
-type jmap map[string]interface{}
-type jslice []interface{}
+// type jmap map[string]interface{}
+// type jslice []interface{}
 
 func WrapTMath(typeMath, math string) interface{} {
 	// explicit struct is possible, even simpler if we use
 	// jmap and jslice aliases for map[string]interface{} and
 	// []interface{}
-	m := jmap{
-		"c": jslice{
-			jmap{
-				"c": jslice{},
+	m := pandocfilter.Jmap{
+		"c": pandocfilter.Jslice{
+			pandocfilter.Jmap{
+				"c": pandocfilter.Jslice{},
 				"t": typeMath,
 			},
 			math,
