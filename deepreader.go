@@ -81,5 +81,8 @@ func GetNumber(json interface{}, indices ...string) (float64, error) {
 	}
 
 	return val, nil
+}
 
+func GetObject(json interface{}, indices ...string) (interface{}, error) {
+	return getObject(json, indices)
 }
