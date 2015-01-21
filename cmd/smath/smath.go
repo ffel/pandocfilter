@@ -90,10 +90,10 @@ func WrapTMath(typeMath, math string) interface{} {
 	// explicit struct is possible, even simpler if we use
 	// jmap and jslice aliases for map[string]interface{} and
 	// []interface{}
-	m := pandocfilter.Jmap{
-		"c": pandocfilter.Jslice{
-			pandocfilter.Jmap{
-				"c": pandocfilter.Jslice{},
+	m := map[string]interface{}{
+		"c": []interface{}{
+			map[string]interface{}{
+				"c": []interface{}{},
 				"t": typeMath,
 			},
 			math,

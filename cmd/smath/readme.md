@@ -1,5 +1,5 @@
-Simple Fractions
-================
+Simple Math
+===========
 
 Pandoc accepts math, for instance $\frac{a}{b}$. But these fractions are
 quite inconvenient to write. We can use filters to pre-process the
@@ -24,3 +24,8 @@ $$a.b/b.d . e/f . g$$
 and
 
 $$a . b/c.d^2 . e$$
+
+This readme can be processed as follows
+
+    pandoc readme.md -o readme.tex --filter ./smath
+
