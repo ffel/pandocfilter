@@ -10,7 +10,7 @@ func getObject(json interface{}, indices []string) (interface{}, error) {
 		i, err := strconv.Atoi(index)
 		if err == nil {
 			// json is a slice?
-			s, sok := json.(Jslice)
+			s, sok := json.([]interface{})
 
 			if !sok {
 				return "", errors.New("GetObject error - no slice for index " + index)
@@ -24,7 +24,7 @@ func getObject(json interface{}, indices []string) (interface{}, error) {
 
 		} else {
 			// json is a map?
-			m, mok := json.(Jmap)
+			m, mok := json.(map[string]interface{})
 
 			if !mok {
 				return "", errors.New("GetObject error - no map for index " + index)
@@ -67,6 +67,11 @@ func GetNumber(json interface{}, indices ...string) (float64, error) {
 
 	if err != nil {
 		return 0, err
+	}
+
+	// know how to deal with an int
+	if ival, ivalok := json.(int); ivalok == true {
+		return float64(ival), nil
 	}
 
 	val, valok := json.(float64)

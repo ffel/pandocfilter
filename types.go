@@ -8,9 +8,6 @@ const (
 	Str    = "Str"    // word (possibly with some interpunction)
 )
 
-type Jmap map[string]interface{}
-type Jslice []interface{}
-
 // CString checks whether value is a tc object with c as a string
 func CString(value interface{}) (bool, string, string) {
 	isTC, t, c := IsTypeContents(value)

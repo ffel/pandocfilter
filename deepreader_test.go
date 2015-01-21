@@ -3,6 +3,8 @@ package pandocfilter
 import "testing"
 
 func TestGetNumber(t *testing.T) {
+
+	// this was a problematic struct but way too big here
 	data := map[string]interface{}{
 		"t": "Header",
 		"c": []interface{}{
@@ -28,16 +30,16 @@ func TestGetNumber(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("unexpected error %v\n", err)
-	} else if val != 0 {
+	} else if val != 1 {
 		t.Errorf("unexpected value %v\n", val)
 	}
 }
 
 func TestGetString(t *testing.T) {
-	data := Jmap{
-		"c": Jslice{
-			Jmap{
-				"c": Jslice{},
+	data := map[string]interface{}{
+		"c": []interface{}{
+			map[string]interface{}{
+				"c": []interface{}{},
 				"t": "deepT",
 			},
 			"lastC",
@@ -72,10 +74,10 @@ func TestGetString(t *testing.T) {
 }
 
 func TestGetString_errors(t *testing.T) {
-	data := Jmap{
-		"c": Jslice{
-			Jmap{
-				"c": Jslice{},
+	data := map[string]interface{}{
+		"c": []interface{}{
+			map[string]interface{}{
+				"c": []interface{}{},
 				"t": "deepT",
 			},
 			"lastC",
