@@ -7,6 +7,11 @@ import (
 )
 
 // Run reads json from stdin, runs filter and writes to stdout
+// todo: this is a tight coupling between processing in and out
+// and one way of processing the json, Walk
+// I can imagine other ways of processing for instance one
+// method that searches the entire doc and modifies other
+// parts based upon the result.
 func Run(filter Filter) {
 	decoder := json.NewDecoder(os.Stdin)
 
