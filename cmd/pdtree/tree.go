@@ -1,9 +1,11 @@
-package pandocfilter
+package main
 
 import (
 	"bytes"
 	"fmt"
 	"strings"
+
+	"github.com/ffel/pandocfilter"
 )
 
 // NewTree initiates a Tree object and returns its pointer
@@ -30,18 +32,18 @@ func (t *Tree) Value(key string, value interface{}) (bool, interface{}) {
 	}
 
 	// a cstring is a special type of map
-	isTC, tval, cval := IsTypeContents(value)
+	isTC, tval, cval := pandocfilter.IsTypeContents(value)
 
 	// don't do anything special with known collection types
 	// as the returned values are used again by pandoc
 
 	if isTC {
 		switch tval {
-		case Space:
+		case pandocfilter.Space:
 			fmt.Fprintf(t.buff, "%s+ %q - %s\n", t.indent(), key, tval)
 			t.update(0, false)
 			return false, value
-		case Str:
+		case pandocfilter.Str:
 			fmt.Fprintf(t.buff, "%s+ %q - %s: %q\n", t.indent(), key, tval, cval.(string))
 			t.update(0, false)
 			return false, value

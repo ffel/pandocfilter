@@ -19,7 +19,7 @@ func main() {
 		return
 	}
 
-	filter := pandocfilter.NewTree()
+	filter := NewTree()
 
 	out := pandocfilter.Walk(filter, "", pandoc)
 
