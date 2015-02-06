@@ -13,6 +13,9 @@ import (
 //
 // The returned interface{} is either the original value or
 // a modified version by Filter.
+//
+// Typically, you don't want the walker to decend in case
+// the original data is modified.
 type Filter interface {
 	Value(key string, value interface{}) (bool, interface{})
 }
