@@ -17,17 +17,21 @@ import (
 // Typically, you don't want the walker to decend in case
 // the original data is modified.
 type Filter interface {
-	Value(key string, value interface{}) (bool, interface{})
+	Value(level int, key string, value interface{}) (bool, interface{})
+}
+
+func Walk(filter Filter, json interface{}) interface{} {
+	return walk(filter, 0, "", json)
 }
 
 // Walk walks the pandoc json structure, calling filter on every element
-func Walk(filter Filter, key string, json interface{}) interface{} {
+func walk(filter Filter, level int, key string, json interface{}) interface{} {
 	list, isList := json.([]interface{})
 	set, isSet := json.(map[string]interface{})
 
 	switch {
 	case isList:
-		decend, result := filter.Value(key, list)
+		decend, result := filter.Value(level, key, list)
 
 		if !decend {
 			return result
@@ -36,7 +40,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		slice := make([]interface{}, 0, len(list))
 
 		for i, v := range list {
-			if next := Walk(filter, strconv.Itoa(i), v); next != nil {
+			if next := walk(filter, level+1, strconv.Itoa(i), v); next != nil {
 				slice = append(slice, next)
 			}
 		}
@@ -44,7 +48,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		return slice
 
 	case isSet:
-		decend, result := filter.Value(key, set)
+		decend, result := filter.Value(level, key, set)
 
 		if !decend {
 			return result
@@ -53,7 +57,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		m := make(map[string]interface{})
 
 		for _, k := range keys(set, true) {
-			if next := Walk(filter, k, set[k]); next != nil {
+			if next := walk(filter, level+1, k, set[k]); next != nil {
 				m[k] = next
 			}
 		}
@@ -61,7 +65,7 @@ func Walk(filter Filter, key string, json interface{}) interface{} {
 		return m
 
 	default:
-		_, result := filter.Value(key, json)
+		_, result := filter.Value(level, key, json)
 
 		return result
 	}

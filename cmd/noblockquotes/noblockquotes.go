@@ -10,7 +10,7 @@ func main() {
 
 type remover struct{}
 
-func (r remover) Value(key string, value interface{}) (bool, interface{}) {
+func (r remover) Value(level int, key string, value interface{}) (bool, interface{}) {
 	ok, t, _ := pandocfilter.IsTypeContents(value)
 
 	if ok && t == "BlockQuote" {

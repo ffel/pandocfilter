@@ -21,7 +21,7 @@ func main() {
 
 	filter := NewTree()
 
-	out := pandocfilter.Walk(filter, "", pandoc)
+	out := pandocfilter.Walk(filter, pandoc)
 
 	// print to stderr to not interfere with json to stdout
 	log.Printf("pandoc tree in go:\n%s\n", filter.String())

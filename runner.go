@@ -22,7 +22,7 @@ func Run(filter Filter) {
 		return
 	}
 
-	out := Walk(filter, "", pandoc)
+	out := Walk(filter, pandoc)
 
 	encoder := json.NewEncoder(os.Stdout)
 

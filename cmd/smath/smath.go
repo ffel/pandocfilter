@@ -21,7 +21,7 @@ func init() {
 
 type frac struct{}
 
-func (f frac) Value(key string, value interface{}) (bool, interface{}) {
+func (f frac) Value(level int, key string, value interface{}) (bool, interface{}) {
 
 	ok, t, _ := pandocfilter.IsTypeContents(value)
 

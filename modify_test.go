@@ -34,7 +34,7 @@ const hello = `[ { "unMeta" : {  } },
 func Test_modify(t *testing.T) {
 	json := decode(hello)
 
-	out := Walk(mod{}, "", json)
+	out := Walk(mod{}, json)
 
 	expected := `[{"unMeta":{}},[{"c":[1,["hello",[],[]],[{"c":"Hello","t":"Str"}]],"t":"Header"},{"c":[{"c":"Universe!!","t":"Str"}],"t":"Para"}]]`
 
@@ -45,7 +45,7 @@ func Test_modify(t *testing.T) {
 
 type mod struct{}
 
-func (m mod) Value(key string, value interface{}) (bool, interface{}) {
+func (m mod) Value(level int, key string, value interface{}) (bool, interface{}) {
 	// CString is a little bit easier than IsTypeContents(value)
 	ok, t, c := CString(value)
 

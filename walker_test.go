@@ -120,7 +120,7 @@ func ExampleDuplicator() {
 
 	f := Duplicator{}
 
-	object := Walk(f, "", json)
+	object := Walk(f, json)
 
 	fmt.Println(encode(object))
 
