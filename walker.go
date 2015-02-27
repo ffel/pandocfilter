@@ -6,14 +6,21 @@ import (
 	"strconv"
 )
 
-// Filter prescibes Value method that is called by Walk
-// Value should return true or meaningfull 2nd return value
-// (for leaves 1st return argument is ignored)
+// Filter prescibes Value method that is called by Walk.
+//
+// The returned bool tells the walker whether or not to
+// decend in the returned interface.
+//
+// The returned interface{} is either the original value or
+// a modified version by Filter.
+//
+// Typically, you don't want the walker to decend in case
+// the original data is modified.
 type Filter interface {
 	Value(key string, value interface{}) (bool, interface{})
 }
 
-// alleen nog maar het doorlopen van de structuur
+// Walk walks the pandoc json structure, calling filter on every element
 func Walk(filter Filter, key string, json interface{}) interface{} {
 	list, isList := json.([]interface{})
 	set, isSet := json.(map[string]interface{})

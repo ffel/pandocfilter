@@ -50,3 +50,28 @@ func IsTypeContents(value interface{}) (bool, string, interface{}) {
 	}
 	return true, str, contents
 }
+
+func IsMeta(value interface{}) (bool, map[string]interface{}) {
+	set, isSet := value.(map[string]interface{})
+	if !isSet {
+		return false, nil
+	}
+	if len(set) != 1 {
+		return false, nil
+	}
+
+	// het gaat om een map met 1 veld, "unMeta", het kind is op zijn
+	// beurt weer een map die je terug wilt geven.
+
+	val, ok := set["unMeta"]
+	if !ok {
+		return false, nil
+	}
+
+	meta, ok := val.(map[string]interface{})
+	if !ok {
+		return false, nil
+	}
+
+	return true, meta
+}

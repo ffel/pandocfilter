@@ -86,3 +86,37 @@ func GetNumber(json interface{}, indices ...string) (float64, error) {
 func GetObject(json interface{}, indices ...string) (interface{}, error) {
 	return getObject(json, indices)
 }
+
+// GetSlice enables to write values
+func GetSlice(json interface{}, indices ...string) ([]interface{}, error) {
+	json, err := getObject(json, indices)
+
+	if err != nil {
+		return make([]interface{}, 0), err
+	}
+
+	val, valok := json.([]interface{})
+
+	if !valok {
+		return make([]interface{}, 0), errors.New("GetSlice error - no slice")
+	}
+
+	return val, nil
+}
+
+// GetMap enables to write values
+func GetMap(json interface{}, indices ...string) (map[string]interface{}, error) {
+	json, err := getObject(json, indices)
+
+	if err != nil {
+		return make(map[string]interface{}), err
+	}
+
+	val, valok := json.(map[string]interface{})
+
+	if !valok {
+		return make(map[string]interface{}, 0), errors.New("GetMap error - no map")
+	}
+
+	return val, nil
+}
