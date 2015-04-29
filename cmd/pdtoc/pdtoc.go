@@ -51,8 +51,8 @@ func (p pdtoc) printHeader(json interface{}) {
 
 	pandocfilter.Walk(col, label)
 
-	fmt.Fprintf(os.Stderr, "%s- %s(#%s)\n",
-		strings.Repeat("  ", int(level-1)), col.value, ref)
+	fmt.Fprintf(os.Stderr, "%s- [%s](#%s)\n",
+		strings.Repeat("  ", int(level-1)), strings.TrimSpace(col.value), ref)
 }
 
 // collector walks the header c and collects the Str
