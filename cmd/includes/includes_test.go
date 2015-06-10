@@ -10,42 +10,36 @@ import (
 
 func TestJson(t *testing.T) {
 	// decode input
-	in_file := ReadFile("data/input.json")
-	defer CloseFile(in_file)
+	in_file := openFile("data/input.json")
+	defer closeFile(in_file)
 
-	dec := json.NewDecoder(in_file)
 	var pandoc interface{}
-	if err := dec.Decode(&pandoc); err != nil {
-		panic(err)
-	}
+	dec := json.NewDecoder(in_file)
+	checkFatal(dec.Decode(&pandoc))
 
 	// apply filter
 	output := pandocfilter.Walk(includes{}, "", pandoc)
 
 	// check
-	x_file := ReadFile("data/expected.json")
-	defer CloseFile(x_file)
+	x_file := openFile("data/expected.json")
+	defer closeFile(x_file)
 
-	dec = json.NewDecoder(x_file)
 	var expected interface{}
-	if err := dec.Decode(&expected); err != nil {
-		panic(err)
-	}
+	dec = json.NewDecoder(x_file)
+	checkFatal(dec.Decode(&expected))
+
 	if !reflect.DeepEqual(output, expected) {
 		t.Errorf("Expected: %v\nbut got: %v\n", expected, output)
 	}
 }
 
-func ReadFile(name string) (file *os.File) {
+func openFile(name string) (file *os.File) {
 	file, err := os.Open(name)
-	if err != nil {
-		panic(err)
-	}
+	checkFatal(err)
 	return file
 }
 
-func CloseFile(file *os.File) {
-	if err := file.Close(); err != nil {
-		panic(err)
-	}
+func closeFile(file *os.File) {
+	err := file.Close()
+	checkFatal(err)
 }

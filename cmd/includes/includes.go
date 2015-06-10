@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ffel/pandocfilter"
 	"io/ioutil"
+	"log"
 )
 
 func main() {
@@ -45,9 +46,13 @@ func (inc includes) Value(key string, value interface{}) (bool, interface{}) {
 }
 
 func loadCodeBlock(name string) string {
-	contents, err := ioutil.ReadFile(name)
+	data, err := ioutil.ReadFile(name)
+	checkFatal(err)
+	return string(data)
+}
+
+func checkFatal(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
-	return string(contents)
 }
