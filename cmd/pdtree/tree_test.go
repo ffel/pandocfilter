@@ -107,7 +107,7 @@ func ExampleTree() {
 
 	f := NewTree()
 
-	_ = pandocfilter.Walk(f, "", json)
+	_ = pandocfilter.Walk(f, json)
 
 	fmt.Println(f.String())
 

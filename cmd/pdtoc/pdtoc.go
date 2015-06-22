@@ -17,7 +17,7 @@ func main() {
 
 type pdtoc struct{}
 
-func (p pdtoc) Value(key string, value interface{}) (bool, interface{}) {
+func (p pdtoc) Value(level int, key string, value interface{}) (bool, interface{}) {
 
 	ok, t, c := pandocfilter.IsTypeContents(value)
 
@@ -49,10 +49,10 @@ func (p pdtoc) printHeader(json interface{}) {
 
 	col := &collector{}
 
-	pandocfilter.Walk(col, "", label)
+	pandocfilter.Walk(col, label)
 
-	fmt.Fprintf(os.Stderr, "%s- %s(#%s)\n",
-		strings.Repeat("  ", int(level-1)), col.value, ref)
+	fmt.Fprintf(os.Stderr, "%s- [%s](#%s)\n",
+		strings.Repeat("  ", int(level-1)), strings.TrimSpace(col.value), ref)
 }
 
 // collector walks the header c and collects the Str
@@ -60,7 +60,7 @@ type collector struct {
 	value string
 }
 
-func (coll *collector) Value(key string, value interface{}) (bool, interface{}) {
+func (coll *collector) Value(level int, key string, value interface{}) (bool, interface{}) {
 	ok, t, c := pandocfilter.IsTypeContents(value)
 
 	if ok && t == "Str" {

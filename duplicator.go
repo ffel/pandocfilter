@@ -7,6 +7,6 @@ package pandocfilter
 type Duplicator struct {
 }
 
-func (d Duplicator) Value(key string, value interface{}) (bool, interface{}) {
+func (d Duplicator) Value(level int, key string, value interface{}) (bool, interface{}) {
 	return true, value
 }
