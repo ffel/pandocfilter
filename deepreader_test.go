@@ -35,6 +35,41 @@ func TestGetNumber(t *testing.T) {
 	}
 }
 
+func TestSetString(t *testing.T) {
+
+	data := map[string]interface{}{
+		"t": "Header",
+		"c": []interface{}{
+			1,
+			[]interface{}{
+				"project-opzet",
+				[]interface{}{},
+				[]interface{}{},
+			}, []interface{}{
+				map[string]interface{}{
+					"t": "Str",
+					"c": "Project",
+				}, map[string]interface{}{
+					"t": "Space",
+					"c": []interface{}{},
+				},
+				map[string]interface{}{
+					"t": "Str",
+					"c": "Opzet",
+				}}}}
+
+	err := SetString(data, "new value", "c", "0")
+
+	// test SetString assuming that GetString works properly
+	val, err := GetString(data, "c", "0")
+
+	if err != nil {
+		t.Errorf("unexpected error %v\n", err)
+	} else if val != "new value" {
+		t.Errorf("unexpected value %v\n", val)
+	}
+}
+
 func TestGetString(t *testing.T) {
 	data := map[string]interface{}{
 		"c": []interface{}{
