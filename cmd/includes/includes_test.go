@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/ffel/pandocfilter"
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/ffel/pandocfilter"
 )
 
 func TestJson(t *testing.T) {
@@ -18,7 +19,7 @@ func TestJson(t *testing.T) {
 	checkFatal(dec.Decode(&pandoc))
 
 	// apply filter
-	output := pandocfilter.Walk(includes{}, "", pandoc)
+	output := pandocfilter.Walk(includes{}, pandoc)
 
 	// check
 	x_file := openFile("data/expected.json")

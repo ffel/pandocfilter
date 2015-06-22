@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/ffel/pandocfilter"
 	"io/ioutil"
 	"log"
+
+	"github.com/ffel/pandocfilter"
 )
 
 func main() {
@@ -20,7 +21,7 @@ type includes struct{}
 //
 // {"c":[["",["go"],[["include","code.go"]]],"the code"],"t":"CodeBlock"}
 //
-func (inc includes) Value(key string, value interface{}) (bool, interface{}) {
+func (inc includes) Value(level int, key string, value interface{}) (bool, interface{}) {
 	ok, t, c := pandocfilter.IsTypeContents(value)
 	if ok && t == "CodeBlock" {
 
